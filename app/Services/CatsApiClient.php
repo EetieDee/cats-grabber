@@ -1,11 +1,9 @@
 <?php
 namespace App\Services;
 
-use Illuminate\Http\Request;
-
 class CatsApiClient
 {
-    public function sendToCatsApi($jsonPayload) {
+    public function addJob($jsonPayload) {
 
         $output = RequestClient::send(
             config('catsone.api_endpoint_add_job'),

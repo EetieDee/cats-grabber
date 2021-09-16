@@ -45,7 +45,7 @@ class HomeController extends Controller
         }
 
         // insert into cats
-        $output = $this->catsApiClient->sendToCatsApi(' {
+        $output = $this->catsApiClient->addJob(' {
             "and": [{
                 "field": "is_published",
                 "filter": "exactly",
