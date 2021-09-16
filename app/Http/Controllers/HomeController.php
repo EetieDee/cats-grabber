@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\CatsApiClient;
 use Illuminate\Http\Request;
 use Smalot\PdfParser\Parser;
 
 class HomeController extends Controller
 {
-    public function __construct()
-    {
+    private $catsApiClient;
 
+    public function __construct(CatsApiClient $catsApiClient)
+    {
+        $this->catsApiClient = $catsApiClient;
     }
 
     public function test(Request $request)
@@ -40,6 +43,25 @@ class HomeController extends Controller
             }
             echo $property . ' => ' . $value . "\n";
         }
+
+        // insert into
+        $output = $this->catsApiClient->sendToCatsApi(' {
+            "and": [{
+                "field": "is_published",
+                "filter": "exactly",
+                "value": true
+            }, {
+                "field": "status_id",
+                "filter": "exactly",
+                "value": "185291"
+            }
+            ]
+        }');
+
+        echo '############################################################'.PHP_EOL;
+        print_r($output);
+        echo '############################################################'.PHP_EOL;
+
 
         return response()->json([
             'status' => 'success',
