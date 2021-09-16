@@ -3,15 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Services\CatsApiClient;
+use App\Services\GrabGovernmentPdfData;
+use App\Transformers\PayloadTransformer;
 use Illuminate\Http\Request;
 use Smalot\PdfParser\Parser;
 
 class HomeController extends Controller
 {
+    private $grabGovernmentPdfData;
+    private $payloadTransformer;
     private $catsApiClient;
 
-    public function __construct(CatsApiClient $catsApiClient)
+    public function __construct(
+        GrabGovernmentPdfData $grabGovernmentPdfData,
+        PayloadTransformer $payloadTransformer,
+        CatsApiClient $catsApiClient)
     {
+        $this->grabGovernmentPdfData = $grabGovernmentPdfData;
+        $this->payloadTransformer = $payloadTransformer;
         $this->catsApiClient = $catsApiClient;
     }
 
@@ -44,6 +53,10 @@ class HomeController extends Controller
             echo $property . ' => ' . $value . "\n";
         }
 
+//        $rawData = $this->grabGovernmentPdfData->grab($pdf);
+//        print_r($rawData);
+//        $payload = $this->payloadTransformer->transform($rawData);
+
         // insert into cats
         $output = $this->catsApiClient->addJob(' {
             "and": [{
@@ -61,6 +74,7 @@ class HomeController extends Controller
         echo '############################################################<br />';
         print_r($output);
         echo '############################################################<br />';
+
 
 
         return response()->json([
