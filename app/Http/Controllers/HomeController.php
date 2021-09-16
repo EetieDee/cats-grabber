@@ -44,7 +44,7 @@ class HomeController extends Controller
             echo $property . ' => ' . $value . "\n";
         }
 
-        // insert into
+        // insert into cats
         $output = $this->catsApiClient->sendToCatsApi(' {
             "and": [{
                 "field": "is_published",
@@ -58,9 +58,9 @@ class HomeController extends Controller
             ]
         }');
 
-        echo '############################################################'.PHP_EOL;
+        echo '############################################################<br />';
         print_r($output);
-        echo '############################################################'.PHP_EOL;
+        echo '############################################################<br />';
 
 
         return response()->json([

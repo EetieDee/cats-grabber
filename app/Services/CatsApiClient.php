@@ -7,10 +7,10 @@ class CatsApiClient
 {
     public function sendToCatsApi($jsonPayload) {
 
-        $output = PostClient::send(
-            "https://api.catsone.nl/v3/jobs/search?per_page=15&page=1",
+        $output = RequestClient::send(
+            config('catsone.api_endpoint_add_job'),
             $jsonPayload,
-            'f08705f76b7d424b0421b0ca2d48a16d');
+            config('catsone.token'));
 
         return $output;
     }

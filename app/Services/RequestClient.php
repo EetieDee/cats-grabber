@@ -1,11 +1,9 @@
 <?php
 namespace App\Services;
 
-// todo misschien andere Classnaam. maar hoe?
-// todo moet Authorization met kleine letter?
 use Illuminate\Support\Facades\Http;
 
-class PostClient {
+class RequestClient {
 
     public static function send($url, $jsonPayload, $token, $method = 'POST')
     {
