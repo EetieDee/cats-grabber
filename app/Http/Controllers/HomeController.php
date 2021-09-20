@@ -33,7 +33,7 @@ class HomeController extends Controller
 
         // get full text
         echo $pdf->getText();
-        print_r($pdf->getPages());
+        // print_r($pdf->getPages());
         echo '<br /><br />';
 
         // get text per page
