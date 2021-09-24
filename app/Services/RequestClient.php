@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Http;
 
 class RequestClient {
 
-    public static function send($url, $jsonPayload, $token, $method = 'POST')
+    public static function sendJsonWithToken($url, $jsonPayload, $token, $method = 'POST')
     {
         $request = Http::withHeaders(
             [
@@ -26,5 +26,10 @@ class RequestClient {
         );
 
         return $response->body();
+    }
+
+    public static function get($url)
+    {
+        return Http::get($url);
     }
 }
