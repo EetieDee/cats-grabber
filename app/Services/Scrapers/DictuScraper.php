@@ -137,31 +137,11 @@ class DictuScraper extends GovernmentPdfAbstract
 
         }
 
-        $description = $this->smalotPdfHelper->getDescriptionHeader($rawData);
+        $description = $this->smalotPdfHelper->getDescription($rawData);
 
         $rawData['description'] = $description;
 
-        // velden boven
-        // Functie:  Servicedesk medewerker   (JA)
-        // Locatie:  Zwolle  (city) JA
-        // Startdatum: 18-10-2021   JA
-        // Duur opdracht:  6 maanden    JA
-        // Inzet per week: 40 uur    JA, Uren per week
-        // Max. uurtarief: Marktconform  (vaste tekst)
-        // Deadline aanbieden: 06-10-2021 vóór 12:00 uur  JA, indienen offertes (alleen dag)
-        //
-        // Achtergrond opdracht + Opdrachtbeschrijving
-        //
-        // eisen:
-        // dominant kwaliteitenprofiel (2e kolom)
-        // certificaten (2e kolom)
-        // ervaring ( 1 + 2 concat)
-
-        // wensen:
-        // de 3 kolommen bij wensen
-
         // fixed data Dictu
-        $rawData['description'] = $this->smalotPdfHelper->getDescriptionHeader($rawData);
         $rawData['company_id'] = 1193352;
 
         return array_merge($this->fixedData(), $rawData);
