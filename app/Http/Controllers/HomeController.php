@@ -25,10 +25,30 @@ class HomeController extends Controller
         $this->catsApiClient = $catsApiClient;
     }
 
-    public function test(Request $request)
+    public function drop(Request $request) {
+        $arr_file_types = ['application/pdf'];
+
+        if (!(in_array($_FILES['file']['type'], $arr_file_types))) {
+            echo 'NO'; exit;
+            return;
+        }
+
+        if (!file_exists('uploads')) {
+            mkdir('uploads', 0777);
+        }
+
+        $filename = time().'_'.$_FILES['file']['name'];
+
+        move_uploaded_file($_FILES['file']['tmp_name'], 'uploads/'.$filename);
+
+        return $this->test('uploads/' . $filename);
+
+    }
+
+    public function test($filePath)
     {
 //        $filePath = 'test.pdf';
-        $filePath = 'pdfs/dictu/dictu1.pdf';
+//        $filePath = 'pdfs/'.$request->get('file');
 
         $parser = new Parser();
         $pdf = $parser->parseFile($filePath);
@@ -53,17 +73,13 @@ class HomeController extends Controller
 
         // echte flow
         $rawData = $this->governmentPdfScraper->scrape($pdf);
-        echo '<pre>'; print_r($rawData); exit;
+//        echo '<pre>'; print_r($rawData); exit;
         $payload = $this->payloadTransformer->transform($rawData);
-        print_r($payload);
+//        print_r($payload);
 
         // insert new job into cats
-        // $output = $this->catsApiClient->addJob($payload);
-//        print_r($output);
+        $output = $this->catsApiClient->addJob($payload);
 
-        return response()->json([
-            'status' => 'success',
-            'response' => 'OK',
-        ], 202);
+        return response()->json($output === '' ? 'OK' : $output, 202);
     }
 }

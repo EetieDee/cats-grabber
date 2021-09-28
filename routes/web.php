@@ -22,3 +22,5 @@ Route::get('/about-us', function () {
 });
 
 Route::get('/test', \App\Http\Controllers\HomeController::class . '@test');
+
+Route::post('/drop', \App\Http\Controllers\HomeController::class . '@drop');

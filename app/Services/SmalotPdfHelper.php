@@ -1,15 +1,17 @@
 <?php
 namespace App\Services;
 
-use phpDocumentor\Reflection\Types\Integer;
+use App\Helpers\DateHelper;
 use Smalot\PdfParser\Page;
 
 class SmalotPdfHelper
 {
     public static $TYPE_IVO30 = 'ivo30';
     public static $TYPE_IVO37 = 'ivo37';
-    public static $TYPE_DICTU = 'dictu';
-    public static $TYPE_LOGIUS = 'logius';
+    public static $TYPE_DICTU530 = 'dictu530';
+    public static $TYPE_DICTU850 = 'dictu850';
+    public static $TYPE_LOGIUS530 = 'logius530';
+    public static $TYPE_LOGIUS850 = 'logius850';
 
     private $dateHelper;
 
@@ -43,13 +45,16 @@ class SmalotPdfHelper
         return $dataTm[$pos][1];
     }
 
-    public function getAllTextFromDataTm($dataTm)
+    public function getAllTextFromDataTm($dataTm, $str = false)
     {
         $text = [];
         foreach($dataTm as $currentTm) {
             $text[] = $currentTm[1];
         }
 
+        if ($str && count($text) > 0) {
+            return $text[0];
+        }
         return $text;
     }
 
@@ -78,53 +83,6 @@ class SmalotPdfHelper
         ];
     }
 
-
-    public function getTextFromX($page)
-    {
-        echo '<pre>'; print_r($page->getTextXY(132, 820, 10, 60)); exit;
-    }
-
-    public function getDescription($rawData): string
-    {
-        // todo here
-        // velden boven
-        // Functie:  Servicedesk medewerker   (JA)
-        // Locatie:  Zwolle  (city) JA
-        // Startdatum: 18-10-2021   JA
-        // Duur opdracht:  6 maanden    JA
-        // Inzet per week: 40 uur    JA, Uren per week
-        // Max. uurtarief: Marktconform  (vaste tekst)
-        // Deadline aanbieden: 06-10-2021 vóór 12:00 uur  JA, indienen offertes (alleen dag)
-        //
-        // Achtergrond opdracht + Opdrachtbeschrijving
-        //
-        // eisen:
-        // dominant kwaliteitenprofiel (2e kolom)
-        // certificaten (2e kolom)
-        // ervaring ( 1 + 2 concat)
-
-        // wensen:
-        // de 3 kolommen bij wensen
-
-
-        return $this->getDescriptionHeader($rawData);
-    }
-
-    public function getDescriptionHeader($rawData): string
-    {
-        $header = '';
-        $header .= 'Functie: ' . $rawData['title'] . '<br />';
-        $header .= 'Locatie: ' . $rawData['city'] . '<br />';
-        $header .= 'Startdatum: ' . $this->dateHelper->formatDutchdate($rawData['dutch_date'], 'd-m-Y') . '<br />';
-        $header .= 'Duur opdracht: ' . $rawData['duration'] . '<br />';
-        $header .= 'Inzet per week: ' . $rawData['hours_per_week'] . ' uur<br />';
-        $header .= 'Max. uurtarief: Marktconform' . '<br />';
-        $header .= 'Deadline aanbieden: ' . $this->dateHelper->formatDutchDate($rawData['deadline'], 'd-m-Y') . '<br />';
-
-        return $header;
-    }
-
-
     public function assumeType(Page $page)
     {
         // assume IVO30: it is type 'ivo' when the following coords consists of version 3.0
@@ -143,22 +101,32 @@ class SmalotPdfHelper
             return self::$TYPE_IVO37;
         }
 
-        // assume DICTU: it is type 'dictu' when the following coords consists of version 5.4
+        // assume DICTU850: it is type 'dictu' when the following coords consists of version 5.4
         //   850, 1273
-        //   530, 789
         $dataTmsDictu1 = $page->getTextXY(850, 1273, 25, 25);
-        $dataTmsDictu2 = $page->getTextXY(530, 789, 25, 25);
-        if ($this->textWithinDataTm($dataTmsDictu1, '5.4') || $this->textWithinDataTm($dataTmsDictu2, '5.4')) {
-            return self::$TYPE_DICTU;
+        if ($this->textWithinDataTm($dataTmsDictu1, '5.4')) {
+            return self::$TYPE_DICTU850;
         }
 
-        // assume LOGIUS: it is type 'logius' when the following coords consists of version 5.1
-        //   852, 1273
-        //   529, 789
-        $dataTmsLogius1 = $page->getTextXY(851, 1273, 15, 15);
-        $dataTmsLogius2 = $page->getTextXY(529, 789, 15, 15);
-        if ($this->textWithinDataTm($dataTmsLogius1, '5.1') || $this->textWithinDataTm($dataTmsLogius2, '5.1')) {
-            return self::$TYPE_LOGIUS;
+        // assume DICTU530: it is type 'dictu' when the following coords consists of version 5.4
+        //   530, 789
+        $dataTmsDictu2 = $page->getTextXY(530, 789, 25, 25);
+        if ($this->textWithinDataTm($dataTmsDictu2, '5.4')) {
+            return self::$TYPE_DICTU530;
+        }
+
+        // assume LOGIUS850: it is type 'logius' when the following coords consists of version 5.1
+        //   850, 1273
+        $dataTmsLogius1 = $page->getTextXY(850, 1273, 15, 15);
+        if ($this->textWithinDataTm($dataTmsLogius1, '5.1')) {
+            return self::$TYPE_LOGIUS850;
+        }
+
+        // assume LOGIUS530: it is type 'logius' when the following coords consists of version 5.1
+        //   530, 789
+        $dataTmsLogius2 = $page->getTextXY(530, 789, 15, 15);
+        if ($this->textWithinDataTm($dataTmsLogius2, '5.1')) {
+            return self::$TYPE_LOGIUS530;
         }
 
     }

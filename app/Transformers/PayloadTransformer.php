@@ -5,7 +5,9 @@ class PayloadTransformer
 {
     public function transform($rawData)
     {
-
+        $attributesToCast = [
+            'openings' => 'integer'
+        ];
 
         $locationObj = new \stdClass();
         $locationAttributes = [
@@ -14,7 +16,7 @@ class PayloadTransformer
             'postal_code'
         ];
         foreach($locationAttributes as $attribute) {
-            $locationObj = $this->setAttributeWhenSet($locationObj, $attribute, $rawData[$attribute]);
+            $locationObj = $this->setAttributeWhenSet($locationObj, $attribute, $rawData[$attribute], $attributesToCast);
         }
 
         $payloadObj = new \stdClass();
@@ -39,8 +41,9 @@ class PayloadTransformer
             'contact_id',
             'workflow_id'
         ];
+
         foreach($payloadAttributes as $attribute) {
-            $payloadObj = $this->setAttributeWhenSet($payloadObj, $attribute, $rawData[$attribute]);
+            $payloadObj = $this->setAttributeWhenSet($payloadObj, $attribute, $rawData[$attribute], $attributesToCast);
         }
 
         $payloadObj->location = $locationObj;
@@ -49,9 +52,21 @@ class PayloadTransformer
         return json_encode($payloadObj);
     }
 
-    private function setAttributeWhenSet($payloadObj, $attribute, $value) {
+    private function setAttributeWhenSet($payloadObj, $attribute, $value, $attributesToCast) {
         if ($value) {
-            $payloadObj->$attribute = $value;
+            if (array_key_exists($attribute, $attributesToCast)) {
+                $action = $attributesToCast[$attribute];
+
+                switch($action) {
+                    case 'integer':
+                        $payloadObj->$attribute = (int)$value;
+                        break;
+                    default:
+                        $payloadObj->$attribute = $value;
+                }
+            } else {
+                $payloadObj->$attribute = $value;
+            }
         }
 
         return $payloadObj;

@@ -2,30 +2,39 @@
 
 namespace App\Services\Scrapers;
 
-use App\Services\DateHelper;
+use App\Helpers\ArrayHelper;
+use App\Helpers\DateHelper;
 use App\Services\GeonamesClient;
 use App\Services\SmalotPdfHelper;
+use App\Transformers\DescriptionTransformer;
 
-class DictuScraper extends GovernmentPdfAbstract
+class Logius850Scraper extends GovernmentPdfAbstract
 {
     private $geonamesClient;
     private $dateHelper;
     private $smalotPdfHelper;
+    private $descriptionTransformer;
+    private $arrayHelper;
 
     public function __construct(
         GeonamesClient $geonamesClient,
         DateHelper $dateHelper,
-        SmalotPdfHelper $smalotPdfHelper
+        SmalotPdfHelper $smalotPdfHelper,
+        DescriptionTransformer $descriptionTransformer,
+        ArrayHelper $arrayHelper
     )
     {
         $this->geonamesClient = $geonamesClient;
         $this->dateHelper = $dateHelper;
         $this->smalotPdfHelper = $smalotPdfHelper;
+        $this->descriptionTransformer = $descriptionTransformer;
+        $this->arrayHelper = $arrayHelper;
     }
 
     public function scrape($pages) : array
     {
         $rawData = [];
+
         foreach ($pages as $page) {
             $dataTm = $page->getDataTm();
 
@@ -41,13 +50,17 @@ class DictuScraper extends GovernmentPdfAbstract
                     if (strpos($textOfElem, '(FTE) bij deze aanvraag') !== false) {
                         $rawData['openings'] = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 1);
                     }
+                }
+            }
+
+            if ($this->smalotPdfHelper->textWithinDataTm($dataTm, 'Indienen offertes*')) {
+                foreach($dataTm as $key => $currentTm) {
+                    $textOfElem = $currentTm[1];
 
                     if (strpos($textOfElem, 'Indienen offertes*') !== false) {
                         $rawData['deadline'] = $this->dateHelper->formatDutchDate($this->smalotPdfHelper->getTextByPos($dataTm, $key + 1));
                     }
-
                 }
-
             }
 
             // page SELECTIE KWALITEITENPROFIEL
@@ -62,12 +75,12 @@ class DictuScraper extends GovernmentPdfAbstract
                 }
 
                 $coordsFromAanvullend = $this->smalotPdfHelper->getCoordsFromText($dataTm, 'Aanvullende kennisgebieden/Voorbeelden van opleidingen', true);
-                $textWithin = $page->getTextXY(132, $coordsFromAanvullend[1] - 40, 10, 35);
-                $rawData['description_aanvullend'] = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
+                $textWithin = $page->getTextXY(211, $coordsFromAanvullend[1] - 40, 10, 35);
+                $descriptionToken['aanvullend'] = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
 
                 $coordsFromToelichting = $this->smalotPdfHelper->getCoordsFromText($dataTm, 'Toelichting', true);
-                $textWithin = $page->getTextXY(132, $coordsFromToelichting[1] - 40, 10, 35);
-                $rawData['description_toelichting'] = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
+                $textWithin = $page->getTextXY(211, $coordsFromToelichting[1] - 40, 10, 35);
+                $descriptionToken['toelichting'] = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
 
             }
 
@@ -79,7 +92,8 @@ class DictuScraper extends GovernmentPdfAbstract
                     if (strpos($textOfElem, 'Gewenste startdatum') !== false) {
                         $dutchDate = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 2);
                         $rawData['dutch_date'] = $dutchDate;
-                        $rawData['start_date'] = $this->dateHelper->formatDutchdate($dutchDate);
+                        $rawData['start_date'] = $this->dateHelper->formatDutchdate($dutchDate, 'Y-m-d');
+                        $rawData['start_date_header'] = $this->dateHelper->formatDutchdate($dutchDate);
                     }
                     if (strpos($textOfElem, 'Aantal maanden initi') !== false) {
                         $rawData['duration'] = $this->smalotPdfHelper->getTextByPos($dataTm, $key - 1) . ' maanden';
@@ -91,7 +105,7 @@ class DictuScraper extends GovernmentPdfAbstract
                     }
 
                     if (strpos($textOfElem, 'Naam hoofdstandplaats') !== false) {
-                        $rawData['city'] = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 2);
+                        $rawData['city'] = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 3);
                     }
 
                     if (strpos($textOfElem, 'Uren per week') !== false) {
@@ -105,46 +119,47 @@ class DictuScraper extends GovernmentPdfAbstract
                 // eisen
                 $coordsFromCompetenties = $this->smalotPdfHelper->getCoordsFromText($dataTm, 'Dominant ', true);
                 $textWithin = $page->getTextXY(253, $coordsFromCompetenties[1] - 25, 10, 25);
-                $rawData['description_eisen_dominant'] = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
+                $descriptionToken['eisen_dominant'] = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
 
 
                 $coordsFromAk = $this->smalotPdfHelper->getCoordsFromText($dataTm, 'Overige vereiste ', true);
                 $textWithin = $page->getTextXY(253, $coordsFromAk[1] - 25, 10, 25);
-                $rawData['description_eisen_overige_vereiste'] = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
+                $descriptionToken['eisen_overige_vereiste'] = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
 
                 $coordsFromWish3 = $this->smalotPdfHelper->getCoordsFromText($dataTm, 'Ervaring', true);
-                $textWithin = $page->getTextXY(132, $coordsFromWish3[1] - 25, 10, 25);
-                $rawData['description_ervaring_left'] = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
-                $textWithin = $page->getTextXY(500, $coordsFromWish3[1] - 25, 10, 25);
-                $rawData['description_ervaring_right'] = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
+
+                $textWithin = $page->getTextXY(211, $coordsFromWish3[1] - 25, 25, 25);
+                $ervaringLeft = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
+                $textWithin = $page->getTextXY(518, $coordsFromWish3[1] - 25, 25, 25);
+                $ervaringRight = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
+                $descriptionToken['ervaring'] = $this->arrayHelper->concatTwoArrays($ervaringLeft, $ervaringRight, 'bewezen aantal jaar');
             }
 
             if ($this->smalotPdfHelper->textWithinDataTm($dataTm, 'WENSEN BIJ DEZE AANVRAAG')) {
 
                 // wensen
                 $coordsFromCompetenties = $this->smalotPdfHelper->getCoordsFromText($dataTm, 'Competenties', true);
-                $textWithin = $page->getTextXY(132, $coordsFromCompetenties[1] - 40, 10, 40);
-                $rawData['description_wensen_competenties'] = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
+                $textWithin = $page->getTextXY(211, $coordsFromCompetenties[1] - 40, 10, 40);
+                $descriptionToken['wensen_competenties'] = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
 
                 $coordsFromAk = $this->smalotPdfHelper->getCoordsFromText($dataTm, 'Aanvullende kennis', true);
-                $textWithin = $page->getTextXY(132, $coordsFromAk[1] - 40, 10, 40);
-                $rawData['description_wensen_aanvullende_kennis'] = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
+                $textWithin = $page->getTextXY(211, $coordsFromAk[1] - 40, 20, 40);
+                $descriptionToken['wensen_aanvullende_kennis'] = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
 
                 $coordsFromWish3 = $this->smalotPdfHelper->getCoordsFromText($dataTm, 'Overige functiewensen', true);
-                $textWithin = $page->getTextXY(132, $coordsFromWish3[1] - 40, 10, 40);
-                $rawData['description_wensen_overige_functiewensen'] = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
+                $textWithin = $page->getTextXY(211, $coordsFromWish3[1] - 40, 20, 40);
+                $descriptionToken['wensen_overige_functiewensen'] = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
             }
 
         }
 
-        $description = $this->smalotPdfHelper->getDescription($rawData);
-
+        $descriptionToken['header'] = $this->descriptionTransformer->getHeader($rawData);
+        $description = $this->descriptionTransformer->getDescription($descriptionToken);
         $rawData['description'] = $description;
 
-        // fixed data Dictu
-        $rawData['company_id'] = 1193352;
+        $rawData['company_id'] = 1438802;
 
         return array_merge($this->fixedData(), $rawData);
-    }
 
+    }
 }
