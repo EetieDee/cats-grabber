@@ -47,7 +47,6 @@ class PayloadTransformer
         }
 
         $payloadObj->location = $locationObj;
-        // todo custom_fields
 
         return json_encode($payloadObj);
     }

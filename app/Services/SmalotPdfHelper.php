@@ -66,7 +66,7 @@ class SmalotPdfHelper
 
         $selectedDataTmElem = array_filter($dataTm, function ($elem) use ($text, $strict) {
             if ($strict) {
-                return $elem[1] == $text;
+                return $elem[1] === $text;
             } else {
                 return strpos($elem[1], $text) !== false;
             }

@@ -26,60 +26,66 @@ class HomeController extends Controller
     }
 
     public function drop(Request $request) {
-        $arr_file_types = ['application/pdf'];
 
-        if (!(in_array($_FILES['file']['type'], $arr_file_types))) {
-            echo 'NO'; exit;
-            return;
+        try {
+            $this->deleteAllFilesFrom('uploads/');
+
+            $arr_file_types = ['application/pdf'];
+
+            if (!(in_array($_FILES['file']['type'], $arr_file_types))) {
+                return 'Wrong file extension!';
+            }
+
+            if (!file_exists('uploads')) {
+                mkdir('uploads', 0777);
+            }
+
+            $filename = time().'_'.$_FILES['file']['name'];
+            move_uploaded_file($_FILES['file']['tmp_name'], 'uploads/'.$filename);
+
+            $output = $this->scrapePdfAndSendToCats('uploads/' . $filename);
+
+            return response()->json($output === '' ? 'OK' : $output, $output === '' ? 200 : 500);
+
+        } catch (\Exception $e) {
+            return $e->getMessage();
         }
-
-        if (!file_exists('uploads')) {
-            mkdir('uploads', 0777);
-        }
-
-        $filename = time().'_'.$_FILES['file']['name'];
-
-        move_uploaded_file($_FILES['file']['tmp_name'], 'uploads/'.$filename);
-
-        return $this->test('uploads/' . $filename);
-
     }
 
-    public function test($filePath)
+    public function test(Request $request)
     {
-//        $filePath = 'test.pdf';
-//        $filePath = 'pdfs/'.$request->get('file');
+        try {
+            $filePath = $request->get('file');
+            return $this->scrapePdfAndSendToCats('pdfs/' . $filePath, true);
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
 
+    private function scrapePdfAndSendToCats($filePath, $debug = false)
+    {
         $parser = new Parser();
         $pdf = $parser->parseFile($filePath);
 
-        // get full text
-//        echo $pdf->getText();
-//        echo '<br /><br />';
-
-        // get text per page
-//        $pages  = $pdf->getPages();
-//        foreach ($pages as $k => $page) {
-//            echo '<pre>';
-//            print($k);
-//            print_r($page->getDataTm());
-////            print_r($page->getTextXY(820, 1198, 20, 20));
-//            break;
-//        }
-
-        // get details
-//        $details  = $pdf->getDetails();
-//        print_r($details);
-
-        // echte flow
         $rawData = $this->governmentPdfScraper->scrape($pdf);
-//        echo '<pre>'; print_r($rawData); exit;
+
         $payload = $this->payloadTransformer->transform($rawData);
-//        print_r($payload);
 
-        // insert new job into cats
-        $output = $this->catsApiClient->addJob($payload);
+        if ($debug) {
+            echo '<pre>';
+            print_r($rawData);
+        } else {
+            return $this->catsApiClient->addJob($payload);
+        }
+    }
 
-        return response()->json($output === '' ? 'OK' : $output, 202);
+    private function deleteAllFilesFrom($dir)
+    {
+        $files = glob($dir . '*'); // get all file names
+        foreach($files as $file){ // iterate files
+            if(is_file($file)) {
+                unlink($file); // delete file
+            }
+        }
     }
 }

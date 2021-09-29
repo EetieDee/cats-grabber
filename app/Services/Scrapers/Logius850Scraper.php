@@ -39,7 +39,7 @@ class Logius850Scraper extends GovernmentPdfAbstract
             $dataTm = $page->getDataTm();
 
             // PAGE 'Aanvraag Inhuur ICT'
-            if ($this->smalotPdfHelper->textWithinDataTm($dataTm, 'Aanvraag Inhuur ICT')) {
+            if ($this->smalotPdfHelper->textWithinDataTm($dataTm, 'Referentienummer')) {
                 foreach($dataTm as $key => $currentTm) {
                     $textOfElem = $currentTm[1];
 
@@ -51,6 +51,14 @@ class Logius850Scraper extends GovernmentPdfAbstract
                         $rawData['openings'] = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 1);
                     }
                 }
+
+                $coordsFromAanvullend = $this->smalotPdfHelper->getCoordsFromText($dataTm, 'Achtergrond opdracht*', true);
+                $textWithin = $page->getTextXY(211, $coordsFromAanvullend[1] - 125, 10, 125);
+                $descriptionToken['aanvullend'] = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
+
+                $coordsFromToelichting = $this->smalotPdfHelper->getCoordsFromText($dataTm, 'Opdrachtbeschrijving *', true);
+                $textWithin = $page->getTextXY(211, $coordsFromToelichting[1] - 165, 10, 165);
+                $descriptionToken['toelichting'] = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
             }
 
             if ($this->smalotPdfHelper->textWithinDataTm($dataTm, 'Indienen offertes*')) {
@@ -73,14 +81,6 @@ class Logius850Scraper extends GovernmentPdfAbstract
                         $rawData['title'] = '(TEST KAI) '. $this->smalotPdfHelper->getTextByPos($dataTm, $key + 1);
                     }
                 }
-
-                $coordsFromAanvullend = $this->smalotPdfHelper->getCoordsFromText($dataTm, 'Aanvullende kennisgebieden/Voorbeelden van opleidingen', true);
-                $textWithin = $page->getTextXY(211, $coordsFromAanvullend[1] - 40, 10, 35);
-                $descriptionToken['aanvullend'] = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
-
-                $coordsFromToelichting = $this->smalotPdfHelper->getCoordsFromText($dataTm, 'Toelichting', true);
-                $textWithin = $page->getTextXY(211, $coordsFromToelichting[1] - 40, 10, 35);
-                $descriptionToken['toelichting'] = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
 
             }
 
@@ -118,19 +118,24 @@ class Logius850Scraper extends GovernmentPdfAbstract
 //                echo '<pre>'; print_r($dataTm); exit;
                 // eisen
                 $coordsFromCompetenties = $this->smalotPdfHelper->getCoordsFromText($dataTm, 'Dominant ', true);
-                $textWithin = $page->getTextXY(253, $coordsFromCompetenties[1] - 25, 10, 25);
-                $descriptionToken['eisen_dominant'] = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
+                $textWithin = $page->getTextXY(211, $coordsFromCompetenties[1] - 35, 25, 35);
+                $dominantLeft = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
+                $textWithin = $page->getTextXY(406, $coordsFromCompetenties[1] - 35, 25, 35);
+                $dominantRight = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
+                $descriptionToken['eisen_dominant'] = $this->arrayHelper->concatTwoArrays($dominantLeft, $dominantRight, 'Opleiding, Certificaten, Kennisniveau*:');
 
 
                 $coordsFromAk = $this->smalotPdfHelper->getCoordsFromText($dataTm, 'Overige vereiste ', true);
-                $textWithin = $page->getTextXY(253, $coordsFromAk[1] - 25, 10, 25);
-                $descriptionToken['eisen_overige_vereiste'] = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
+                $textWithin = $page->getTextXY(211, $coordsFromAk[1] - 35, 25, 35);
+                $akLeft = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
+                $textWithin = $page->getTextXY(406, $coordsFromAk[1] - 35, 25, 35);
+                $akRight = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
+                $descriptionToken['eisen_overige_vereiste'] = $this->arrayHelper->concatTwoArrays($akLeft, $akRight, 'Opleiding, Certificaten, Kennisniveau:');
 
                 $coordsFromWish3 = $this->smalotPdfHelper->getCoordsFromText($dataTm, 'Ervaring', true);
-
-                $textWithin = $page->getTextXY(211, $coordsFromWish3[1] - 25, 25, 25);
+                $textWithin = $page->getTextXY(211, $coordsFromWish3[1] - 35, 50, 35);
                 $ervaringLeft = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
-                $textWithin = $page->getTextXY(518, $coordsFromWish3[1] - 25, 25, 25);
+                $textWithin = $page->getTextXY(833, $coordsFromWish3[1] - 35, 20, 35);
                 $ervaringRight = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
                 $descriptionToken['ervaring'] = $this->arrayHelper->concatTwoArrays($ervaringLeft, $ervaringRight, 'bewezen aantal jaar');
             }
@@ -139,7 +144,7 @@ class Logius850Scraper extends GovernmentPdfAbstract
 
                 // wensen
                 $coordsFromCompetenties = $this->smalotPdfHelper->getCoordsFromText($dataTm, 'Competenties', true);
-                $textWithin = $page->getTextXY(211, $coordsFromCompetenties[1] - 40, 10, 40);
+                $textWithin = $page->getTextXY(211, $coordsFromCompetenties[1] - 50, 10, 50);
                 $descriptionToken['wensen_competenties'] = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);
 
                 $coordsFromAk = $this->smalotPdfHelper->getCoordsFromText($dataTm, 'Aanvullende kennis', true);

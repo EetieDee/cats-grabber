@@ -50,7 +50,7 @@ class GovernmentPdfScraper
 
         switch($type) {
             case SmalotPdfHelper::$TYPE_IVO30:
-                return 'Sorry, deze versie wordt niet ondersteund.';
+                throw new \Exception('Sorry, deze versie (IVO v3.0) wordt niet ondersteund.');
             case SmalotPdfHelper::$TYPE_IVO37:
                 return $this->ivoScraper37->scrape($pdf->getPages());
             case SmalotPdfHelper::$TYPE_LOGIUS850:
