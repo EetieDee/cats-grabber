@@ -7,6 +7,7 @@ use App\Services\GovernmentPdfScraper;
 use App\Services\SmalotPdfHelper;
 use App\Transformers\PayloadTransformer;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 use Smalot\PdfParser\Parser;
 
 class HomeController extends Controller
@@ -23,6 +24,13 @@ class HomeController extends Controller
         $this->governmentPdfScraper = $governmentPdfScraper;
         $this->payloadTransformer = $payloadTransformer;
         $this->catsApiClient = $catsApiClient;
+    }
+
+    public function index(Request $request) {
+        if(!$this->checkAuthentication($request)) {
+            return;
+        }
+        return Inertia::render('Home');
     }
 
     public function drop(Request $request) {
@@ -54,6 +62,9 @@ class HomeController extends Controller
 
     public function test(Request $request)
     {
+        if(!$this->checkAuthentication($request)) {
+            return;
+        }
         try {
             $filePath = $request->get('file');
             return $this->scrapePdfAndSendToCats('pdfs/' . $filePath, true);
@@ -87,5 +98,15 @@ class HomeController extends Controller
                 unlink($file); // delete file
             }
         }
+    }
+
+    private function checkAuthentication(Request $request)
+    {
+        $token = config('app.secret');
+        if ($request->has('token') && $request->get('token') === $token) {
+            return true;
+        }
+
+        return false;
     }
 }

@@ -13,13 +13,7 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/', function () {
-    return Inertia::render('Home', ['test' => 'working']);
-});
-
-Route::get('/about-us', function () {
-    return Inertia::render('About', ['about_us' => 'working']);
-});
+Route::get('/',\App\Http\Controllers\HomeController::class . '@index');
 
 Route::get('/test', \App\Http\Controllers\HomeController::class . '@test');
 
