@@ -42,7 +42,7 @@ class IvoScraper37 extends GovernmentPdfAbstract
             if ($this->smalotPdfHelper->textWithinDataTm($dataTm, 'SELECTIE KWALITEITENPROFIEL')) {
 
                 $textWithin = $page->getTextXY(355, 994, 20, 20);
-                $title =  '(TEST KAI) '. $this->smalotPdfHelper->getAllTextFromDataTm($textWithin)[0] ?? '';
+                $title =  $this->smalotPdfHelper->getAllTextFromDataTm($textWithin)[0] ?? '';
                 $descriptionToken['title'] = $title;
                 $rawData['title'] = $title;    // JA
 

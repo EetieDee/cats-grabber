@@ -71,7 +71,7 @@ class Dictu530Scraper extends GovernmentPdfAbstract
                     $textOfElem = $currentTm[1];
 
                     if (strpos($textOfElem, 'Let op! Eisen zijn knock-out criteria') !== false) {
-                        $rawData['title'] = '(TEST KAI) '. $this->smalotPdfHelper->getTextByPos($dataTm, $key + 1);
+                        $rawData['title'] = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 1);
                     }
                 }
             }

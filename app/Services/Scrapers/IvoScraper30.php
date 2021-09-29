@@ -90,7 +90,7 @@ class IvoScraper30 extends GovernmentPdfAbstract
 
                 $coordsFromFunctienaam = $this->smalotPdfHelper->getCoordsFromText($dataTm, 'Functienaam (roepnaam)', true);
                 $textWithin = $page->getTextXY(170, $coordsFromFunctienaam[1] - 50, 12, 12);
-                $title =  '(TEST KAI) '. $this->smalotPdfHelper->getAllTextFromDataTm($textWithin)[0] ?? '';
+                $title =  $this->smalotPdfHelper->getAllTextFromDataTm($textWithin)[0] ?? '';
                 $descriptionToken['title'] = $title;
                 $rawData['title'] = $title;
             }
