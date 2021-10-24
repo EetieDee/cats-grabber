@@ -24,7 +24,7 @@ function ajax_file_upload(file_obj, token) {
         xhttp.open("POST", "/drop", true);
         xhttp.onload = function(event) {
             oOutput = document.querySelector('.img-content');
-            oOutput.innerHTML = '<br /><br />' + this.responseText;
+            oOutput.innerHTML = '<br />' + this.responseText;
             // if (xhttp.status == 200) {
             //     oOutput.innerHTML = "<img src='"+ this.responseText +"' alt='The Image' />";
             // } else {

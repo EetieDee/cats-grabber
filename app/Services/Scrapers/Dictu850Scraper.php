@@ -92,7 +92,8 @@ class Dictu850Scraper extends GovernmentPdfAbstract
                     if (strpos($textOfElem, 'Gewenste startdatum') !== false) {
                         $dutchDate = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 2);
                         $rawData['dutch_date'] = $dutchDate;
-                        $rawData['start_date'] = $this->dateHelper->formatDutchdate($dutchDate, 'd-m-Y');
+                        $rawData['start_date'] = $this->dateHelper->formatDutchdate($dutchDate, 'Y-m-d');
+                        $rawData['start_date_custom'] = $this->dateHelper->formatDutchdate($dutchDate, 'd-m-Y');
                         $rawData['start_date_header'] = $this->dateHelper->formatDutchdate($dutchDate);
                     }
                     if (strpos($textOfElem, 'Aantal maanden initi') !== false) {

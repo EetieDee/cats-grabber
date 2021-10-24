@@ -57,7 +57,7 @@ class HomeController extends Controller
 
             $output = $this->scrapePdfAndSendToCats('uploads/' . $filename);
 
-            return response()->json($output === '' ? 'OK' : $output, $output === '' ? 200 : 500);
+            return $output;
 
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -79,6 +79,7 @@ class HomeController extends Controller
 
     private function scrapePdfAndSendToCats($filePath, $debug = false)
     {
+        $outputMsg = '';
         $parser = new Parser();
         $pdf = $parser->parseFile($filePath);
 
@@ -96,12 +97,14 @@ class HomeController extends Controller
 
         if (strpos($output, 'api.catsone.nl')) {
 
+            $link = str_replace('https://api.catsone.nl/v3/jobs/', 'https://ukomst.catsone.nl/index.php?m=joborders&a=show&jobOrderID=', $output);
+            $outputMsg = "Gelukt! Ga naar: <br/> <a href='".$link."' target='_blank'>".$link."</a>";
             $jobId = $this->getJobIdFromUrl($output);
 
             // OK, add custom fields
             // '20771' => 'schaal',
             $customFields = [
-                '18500' => 'start_date',
+                '18500' => 'start_date_custom',
                 '20091' => 'deadline',
                 '18518' => 'hours_per_week',
                 '37646' => 'referentienr',
@@ -115,9 +118,11 @@ class HomeController extends Controller
 
             // add attachment
             $this->catsApiClient->addAttachment($jobId, $filePath);
+        } else {
+            $outputMsg = 'Vacature bestaat al of er is een fout opgetreden.. '.$output;
         }
 
-        return $output;
+        return $outputMsg;
     }
 
     private function deleteAllFilesFrom($dir)

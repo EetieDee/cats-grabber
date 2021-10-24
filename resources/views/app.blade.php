@@ -7,16 +7,19 @@
     <script src="js/script.js"></script>
 </head>
 <body>
+<center>
+<img src="img/ukomst-logo.svg" width="300" style="margin: 20px" />
+<div style="color: #00BED1; font-family: 'Arial'; font-size: 20px; margin: 10px">Overheids-pdfbestand-scraper</div>
 <div id="drop_file_zone" ondrop="upload_file(event)" ondragover="return false">
     <div id="drag_upload_file">
-        <p>Drop file here</p>
+        <p style="color: #00BED1; font-family: 'Arial'; font-size: 13px">Drop hier het pdf-bestand</p>
         {!! csrf_field() !!}
-        <p>or</p>
+        <p  style="color: #00BED1; font-family: 'Arial'; font-size: 13px">- of -</p>
         <p><input type="button" value="Select File" onclick="file_explorer();" /></p>
         <input type="file" id="selectfile" />
     </div>
 </div>
-<div class="img-content"></div>
-
+<div class="img-content" style="color: #00BED1; font-family: 'Arial'; font-size: 20px; margin: 10px"></div>
+</center>
 </body>
 </html>

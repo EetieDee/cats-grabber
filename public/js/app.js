@@ -25,34 +25,43 @@ var fileobj;
 
 function upload_file(e) {
   e.preventDefault();
+  console.log('f ');
   fileobj = e.dataTransfer.files[0];
-  ajax_file_upload(fileobj);
+  token = document.getElementById('_token').value;
+  ajax_file_upload(fileobj, token);
 }
 
 function file_explorer() {
   document.getElementById('selectfile').click();
 
   document.getElementById('selectfile').onchange = function () {
+    console.log('abc');
     fileobj = document.getElementById('selectfile').files[0];
-    ajax_file_upload(fileobj);
+    token = document.getElementById('_token').value;
+    ajax_file_upload(fileobj, token);
   };
 }
 
-function ajax_file_upload(file_obj) {
+function ajax_file_upload(file_obj, token) {
+  console.log('h aa');
+
   if (file_obj != undefined) {
     var form_data = new FormData();
     form_data.append('file', file_obj);
+    form_data.append('_token', token);
     var xhttp = new XMLHttpRequest();
     xhttp.open("POST", "ajax.php", true);
 
     xhttp.onload = function (event) {
       oOutput = document.querySelector('.img-content');
-
-      if (xhttp.status == 200) {
-        oOutput.innerHTML = "<img src='" + this.responseText + "' alt='The Image' />";
-      } else {
-        oOutput.innerHTML = "Error " + xhttp.status + " occurred when trying to upload your file.";
-      }
+      oOutput.innerHTML = 'hoi'; // if (xhttp.status == 200 || xhttp.status == 202) {
+      //     console.log(event, xhttp, this.responseText);
+      //     oOutput.innerHTML = "<img src='"+ this.responseText +"' alt='The Image' />";
+      // } else {
+      //     console.log('hoi');
+      //     console.log(event, this.responseText);
+      //     oOutput.innerHTML = "Error " + xhttp.status + " occurred when trying to upload your file.";
+      // }
     };
 
     xhttp.send(form_data);
@@ -78,7 +87,7 @@ __webpack_require__.r(__webpack_exports__);
 /************************************************************************/
 /******/ 	// The module cache
 /******/ 	var __webpack_module_cache__ = {};
-/******/ 	
+/******/
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
 /******/ 		// Check if module is in cache
@@ -92,17 +101,17 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
 /******/ 		};
-/******/ 	
+/******/
 /******/ 		// Execute the module function
 /******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
-/******/ 	
+/******/
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-/******/ 	
+/******/
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = __webpack_modules__;
-/******/ 	
+/******/
 /************************************************************************/
 /******/ 	/* webpack/runtime/chunk loaded */
 /******/ 	(() => {
@@ -135,12 +144,12 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 			return result;
 /******/ 		};
 /******/ 	})();
-/******/ 	
+/******/
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
 /******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ 	})();
-/******/ 	
+/******/
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
@@ -151,11 +160,11 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 			Object.defineProperty(exports, '__esModule', { value: true });
 /******/ 		};
 /******/ 	})();
-/******/ 	
+/******/
 /******/ 	/* webpack/runtime/jsonp chunk loading */
 /******/ 	(() => {
 /******/ 		// no baseURI
-/******/ 		
+/******/
 /******/ 		// object to store loaded and loading chunks
 /******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
 /******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
@@ -163,19 +172,19 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 			"/js/app": 0,
 /******/ 			"css/app": 0
 /******/ 		};
-/******/ 		
+/******/
 /******/ 		// no chunk on demand loading
-/******/ 		
+/******/
 /******/ 		// no prefetching
-/******/ 		
+/******/
 /******/ 		// no preloaded
-/******/ 		
+/******/
 /******/ 		// no HMR
-/******/ 		
+/******/
 /******/ 		// no HMR manifest
-/******/ 		
+/******/
 /******/ 		__webpack_require__.O.j = (chunkId) => (installedChunks[chunkId] === 0);
-/******/ 		
+/******/
 /******/ 		// install a JSONP callback for chunk loading
 /******/ 		var webpackJsonpCallback = (parentChunkLoadingFunction, data) => {
 /******/ 			var [chunkIds, moreModules, runtime] = data;
@@ -200,20 +209,20 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 			}
 /******/ 			return __webpack_require__.O(result);
 /******/ 		}
-/******/ 		
+/******/
 /******/ 		var chunkLoadingGlobal = self["webpackChunk"] = self["webpackChunk"] || [];
 /******/ 		chunkLoadingGlobal.forEach(webpackJsonpCallback.bind(null, 0));
 /******/ 		chunkLoadingGlobal.push = webpackJsonpCallback.bind(null, chunkLoadingGlobal.push.bind(chunkLoadingGlobal));
 /******/ 	})();
-/******/ 	
+/******/
 /************************************************************************/
-/******/ 	
+/******/
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
 /******/ 	__webpack_require__.O(undefined, ["css/app"], () => (__webpack_require__("./resources/js/app.js")))
 /******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["css/app"], () => (__webpack_require__("./resources/css/app.css")))
 /******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
-/******/ 	
+/******/
 /******/ })()
 ;

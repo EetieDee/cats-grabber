@@ -1,6 +1,6 @@
 #drop_file_zone {
-    background-color: #EEE;
-    border: #999 5px dashed;
+    background-color: #FAFEFF;
+    border: #00BED1 1px solid;
     width: 290px;
     height: 200px;
     padding: 8px;
@@ -15,4 +15,7 @@
 }
 #drag_upload_file #selectfile {
     display: none;
+}
+body {
+    background-color: #EFFCFC;
 }

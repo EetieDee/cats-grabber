@@ -7,25 +7,35 @@ class RequestClient {
 
     public static function sendJsonWithToken($url, $jsonPayload, $token, $method = 'POST', $returnHeader = false) : string
     {
-        $request = Http::withHeaders(
-            [
-                'Content-Type' => 'application/json;charset=utf-8',
-                'Authorization' => 'Token ' . $token
-            ]
-        );
+        try {
+            $request = Http::withHeaders(
+                [
+                    'Content-Type' => 'application/json;charset=utf-8',
+                    'Authorization' => 'Token ' . $token
+                ]
+            );
 
-        $payload = [];
-        if ($jsonPayload) {
-            $payload['body'] = $jsonPayload;
+            $payload = [];
+            if ($jsonPayload) {
+                $payload['body'] = $jsonPayload;
+            }
+
+            $response = $request->send(
+                $method,
+                $url,
+                $payload
+            );
+
+            // oh oh..
+            if ($response->body() !== '') {
+                return $response->body();
+            }
+
+            return $returnHeader ? $response->header($returnHeader) : $response->body();
+        } catch (\Exception $e) {
+            return $e->getMessage();
         }
 
-        $response = $request->send(
-            $method,
-            $url,
-            $payload
-        );
-
-        return $returnHeader ? $response->header($returnHeader) : $response->body();
     }
 
     public static function sendBinaryWithToken($url, $token, $fileName, $filePath) : string
