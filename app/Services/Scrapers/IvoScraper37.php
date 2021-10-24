@@ -40,7 +40,7 @@ class IvoScraper37 extends GovernmentPdfAbstract
 
 
             if ($this->smalotPdfHelper->textWithinDataTm($dataTm, 'SELECTIE KWALITEITENPROFIEL')) {
-
+//                echo '<pre>'; print_r($dataTm); exit;
                 $textWithin = $page->getTextXY(355, 994, 20, 20);
                 $title =  $this->smalotPdfHelper->getAllTextFromDataTm($textWithin)[0] ?? '';
                 $descriptionToken['title'] = $title;
@@ -48,6 +48,8 @@ class IvoScraper37 extends GovernmentPdfAbstract
 
                 $textWithin = $page->getTextXY(788, 1024, 20, 20);
                 $rawData['openings'] = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin, true);  // JA
+
+                $rawData['scale'] = ''; // bestaat niet in ivo37
             }
 
 
@@ -58,7 +60,7 @@ class IvoScraper37 extends GovernmentPdfAbstract
                     $textOfElem = $currentTm[1];
 
                     if (strpos($textOfElem, 'Referentienummer') !== false) {
-                        $rawData['notes'] = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 3);   // JA
+                        $rawData['referentienr'] = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 3);   // JA
                     }
 
 
@@ -70,7 +72,7 @@ class IvoScraper37 extends GovernmentPdfAbstract
                     $textOfElem = $currentTm[1];
 
                     if (strpos($textOfElem, 'Indienen offertes*') !== false) {
-                        $rawData['deadline'] = $this->dateHelper->formatDutchDate($this->smalotPdfHelper->getTextByPos($dataTm, $key + 1));  // JA
+                        $rawData['deadline'] = $this->dateHelper->formatDutchDate($this->smalotPdfHelper->getTextByPos($dataTm, $key + 1),'m-d-Y');  // JA
                     }
                 }
             }
@@ -91,14 +93,14 @@ class IvoScraper37 extends GovernmentPdfAbstract
 
             // page INZETGEGEVENS
             if ($this->smalotPdfHelper->textWithinDataTm($dataTm, 'INZETGEGEVENS')) {
-//                echo '<pre>ggg'; print_r($dataTm); exit;
+                // echo '<pre>ggg'; print_r($dataTm); exit;
                 foreach ($dataTm as $key => $currentTm) {
                     $textOfElem = $currentTm[1];
 
                     if (strpos($textOfElem, 'Gewenste startdatum') !== false) {
                         $dutchDate = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 2);
                         $rawData['dutch_date'] = $dutchDate;
-                        $rawData['start_date'] = $this->dateHelper->formatDutchdate($dutchDate, 'Y-m-d');
+                        $rawData['start_date'] = $this->dateHelper->formatDutchdate($dutchDate, 'd-m-Y');
                         $rawData['start_date_header'] = $this->dateHelper->formatDutchdate($dutchDate);       // JA
                     }
                     if (strpos($textOfElem, 'Aantal maanden initi') !== false) {
@@ -116,6 +118,10 @@ class IvoScraper37 extends GovernmentPdfAbstract
 
                     if (strpos($textOfElem, 'Uren per week') !== false) {
                         $rawData['hours_per_week'] = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 2);
+                    }
+
+                    if (strpos($textOfElem, 'Soort Aanvraag') !== false) {
+                        $rawData['notes'] = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 1);
                     }
                 }
             }
@@ -154,7 +160,6 @@ class IvoScraper37 extends GovernmentPdfAbstract
         $rawData['description'] = $description;
 
         $rawData['company_id'] = 1005293;
-echo '<pre>'; print_r($rawData); exit;
         return array_merge($this->fixedData(), $rawData);
 
     }

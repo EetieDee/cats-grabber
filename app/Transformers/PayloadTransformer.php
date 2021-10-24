@@ -9,16 +9,6 @@ class PayloadTransformer
             'openings' => 'integer'
         ];
 
-        $locationObj = new \stdClass();
-        $locationAttributes = [
-            'city',
-            'state',
-            'postal_code'
-        ];
-        foreach($locationAttributes as $attribute) {
-            $locationObj = $this->setAttributeWhenSet($locationObj, $attribute, $rawData[$attribute], $attributesToCast);
-        }
-
         $payloadObj = new \stdClass();
         $payloadAttributes = [
             'title',
@@ -28,7 +18,6 @@ class PayloadTransformer
             'owner_id',
             'category_name',
             'is_hot',
-            'start_date',
             'salary',
             'max_rate',
             'duration',
@@ -36,6 +25,7 @@ class PayloadTransformer
             'openings',
             'external_id',
             'description',
+            'start_date',
             'notes',
             'country_code',
             'contact_id',
@@ -46,6 +36,16 @@ class PayloadTransformer
             $payloadObj = $this->setAttributeWhenSet($payloadObj, $attribute, $rawData[$attribute], $attributesToCast);
         }
 
+        // add location
+        $locationObj = new \stdClass();
+        $locationAttributes = [
+            'city',
+            'state',
+            'postal_code'
+        ];
+        foreach($locationAttributes as $attribute) {
+            $locationObj = $this->setAttributeWhenSet($locationObj, $attribute, $rawData[$attribute], $attributesToCast);
+        }
         $payloadObj->location = $locationObj;
 
         return json_encode($payloadObj);

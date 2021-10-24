@@ -37,7 +37,7 @@ class DescriptionTransformer
     {
         $description = '';
         $description .= $descriptionToken['header'];
-        $description .= '<br />';
+        $description .= '<br /><br />';
         $description .= implode(',', $descriptionToken['aanvullend']);
         $description .= '<br /><br />';
         $description .= implode(',', $descriptionToken['toelichting']);

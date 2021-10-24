@@ -28,4 +28,9 @@ class ArrayHelper
         }
         return $output;
     }
+
+    public function getCatsoneSchaalId($schaal) {
+        $arr = [8 => 173549, 9 => 173552, 10 => 173555, 11 => 173558, 12 => 173561, 13 => 173564, 14 => 173567, 15 => 173570];
+        return $arr[$schaal];
+    }
 }

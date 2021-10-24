@@ -58,7 +58,7 @@ class IvoScraper30 extends GovernmentPdfAbstract
                     $textOfElem = $currentTm[1];
 
                     if (strpos($textOfElem, 'Indienen offertes*') !== false) {
-                        $rawData['deadline'] = $this->dateHelper->formatDutchDate($this->smalotPdfHelper->getTextByPos($dataTm, $key + 1));
+                        $rawData['deadline'] = $this->dateHelper->formatDutchDate($this->smalotPdfHelper->getTextByPos($dataTm, $key + 1), 'm-d-Y');
                     }
                 }
             }
@@ -86,7 +86,7 @@ class IvoScraper30 extends GovernmentPdfAbstract
 
             // page SELECTIE KWALITEITENPROFIEL
             if ($this->smalotPdfHelper->textWithinDataTm($dataTm, 'SELECTIE KWALITEITENPROFIEL')) {
-                                echo '<pre>'; print_r($dataTm); exit;
+                               // echo '<pre>'; print_r($dataTm); exit;
 
                 $coordsFromFunctienaam = $this->smalotPdfHelper->getCoordsFromText($dataTm, 'Functienaam (roepnaam)', true);
                 $textWithin = $page->getTextXY(170, $coordsFromFunctienaam[1] - 50, 12, 12);
@@ -103,7 +103,7 @@ class IvoScraper30 extends GovernmentPdfAbstract
                     if (strpos($textOfElem, 'Gewenste startdatum') !== false) {
                         $dutchDate = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 2);
                         $rawData['dutch_date'] = $dutchDate;
-                        $rawData['start_date'] = $this->dateHelper->formatDutchdate($dutchDate, 'Y-m-d');
+                        $rawData['start_date'] = $this->dateHelper->formatDutchdate($dutchDate, 'd-m-Y');
                         $rawData['start_date_header'] = $this->dateHelper->formatDutchdate($dutchDate);
                     }
                     if (strpos($textOfElem, 'Aantal maanden initi') !== false) {
@@ -126,7 +126,7 @@ class IvoScraper30 extends GovernmentPdfAbstract
             }
 
             if ($this->smalotPdfHelper->textWithinDataTm($dataTm, 'EISEN EN WENSEN')) {
-                echo '<pre>'; print_r($dataTm); exit;
+                //echo '<pre>'; print_r($dataTm); exit;
                 // eisen
                 $textWithin = $page->getTextXY(344, 1039 - 70, 10, 70);
                 $eisenDominantLeft = $this->smalotPdfHelper->getAllTextFromDataTm($textWithin);

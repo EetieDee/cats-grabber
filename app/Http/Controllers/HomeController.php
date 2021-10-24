@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\CatsApiClient;
 use App\Services\GovernmentPdfScraper;
 use App\Services\SmalotPdfHelper;
+use App\Transformers\CustomFieldTransformer;
 use App\Transformers\PayloadTransformer;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -14,15 +15,18 @@ class HomeController extends Controller
 {
     private $governmentPdfScraper;
     private $payloadTransformer;
+    private $customFieldTransformer;
     private $catsApiClient;
 
     public function __construct(
         GovernmentPdfScraper $governmentPdfScraper,
         PayloadTransformer   $payloadTransformer,
+        CustomFieldTransformer $customFieldTransformer,
         CatsApiClient        $catsApiClient)
     {
         $this->governmentPdfScraper = $governmentPdfScraper;
         $this->payloadTransformer = $payloadTransformer;
+        $this->customFieldTransformer = $customFieldTransformer;
         $this->catsApiClient = $catsApiClient;
     }
 
@@ -85,9 +89,35 @@ class HomeController extends Controller
         if ($debug) {
             echo '<pre>';
             print_r($rawData);
+            exit;
         } else {
-            return $this->catsApiClient->addJob($payload);
+            $output = $this->catsApiClient->addJob($payload);
         }
+
+        if (strpos($output, 'api.catsone.nl')) {
+
+            $jobId = $this->getJobIdFromUrl($output);
+
+            // OK, add custom fields
+            // '20771' => 'schaal',
+            $customFields = [
+                '18500' => 'start_date',
+                '20091' => 'deadline',
+                '18518' => 'hours_per_week',
+                '37646' => 'referentienr',
+                '20771' => 'scale'
+            ];
+
+            foreach ($customFields as $customFieldId => $rawDataName) {
+                $payload = $this->customFieldTransformer->transform($rawData[$rawDataName]);
+                $this->catsApiClient->addCustomField($jobId, $customFieldId, $payload);
+            }
+
+            // add attachment
+            $this->catsApiClient->addAttachment($jobId, $filePath);
+        }
+
+        return $output;
     }
 
     private function deleteAllFilesFrom($dir)
@@ -108,5 +138,15 @@ class HomeController extends Controller
         }
 
         return false;
+    }
+
+    /**
+     * @param string $output
+     * @return mixed|string
+     */
+    private function getJobIdFromUrl(string $output)
+    {
+        $outputArr = explode('/', $output);
+        return $outputArr[count($outputArr) - 1];
     }
 }

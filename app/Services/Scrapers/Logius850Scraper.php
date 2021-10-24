@@ -41,14 +41,19 @@ class Logius850Scraper extends GovernmentPdfAbstract
             // PAGE 'Aanvraag Inhuur ICT'
             if ($this->smalotPdfHelper->textWithinDataTm($dataTm, 'Referentienummer')) {
                 foreach($dataTm as $key => $currentTm) {
+//                    echo '<pre>'; print_r($dataTm); exit;
                     $textOfElem = $currentTm[1];
 
                     if (strpos($textOfElem, 'Referentienummer') !== false) {
-                        $rawData['notes'] = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 3);
+                        $rawData['referentienr'] = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 3);
                     }
 
                     if (strpos($textOfElem, '(FTE) bij deze aanvraag') !== false) {
                         $rawData['openings'] = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 1);
+                    }
+
+                    if (strpos($textOfElem, 'Soort Aanvraag') !== false) {
+                        $rawData['notes'] = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 1);
                     }
                 }
 
@@ -66,7 +71,7 @@ class Logius850Scraper extends GovernmentPdfAbstract
                     $textOfElem = $currentTm[1];
 
                     if (strpos($textOfElem, 'Indienen offertes*') !== false) {
-                        $rawData['deadline'] = $this->dateHelper->formatDutchDate($this->smalotPdfHelper->getTextByPos($dataTm, $key + 1));
+                        $rawData['deadline'] = $this->dateHelper->formatDutchDate($this->smalotPdfHelper->getTextByPos($dataTm, $key + 1),'m-d-Y');
                     }
                 }
             }
@@ -80,6 +85,11 @@ class Logius850Scraper extends GovernmentPdfAbstract
                     if (strpos($textOfElem, 'Let op! Eisen zijn knock-out criteria') !== false) {
                         $rawData['title'] = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 1);
                     }
+
+                    if (strpos($textOfElem, 'salarisschaal Rijk*') !== false) {
+                        $scale = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 1);
+                        $rawData['scale'] = $this->arrayHelper->getCatsoneSchaalId($scale);
+                    }
                 }
 
             }
@@ -92,7 +102,7 @@ class Logius850Scraper extends GovernmentPdfAbstract
                     if (strpos($textOfElem, 'Gewenste startdatum') !== false) {
                         $dutchDate = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 2);
                         $rawData['dutch_date'] = $dutchDate;
-                        $rawData['start_date'] = $this->dateHelper->formatDutchdate($dutchDate, 'Y-m-d');
+                        $rawData['start_date'] = $this->dateHelper->formatDutchdate($dutchDate, 'd-m-Y');
                         $rawData['start_date_header'] = $this->dateHelper->formatDutchdate($dutchDate);
                     }
                     if (strpos($textOfElem, 'Aantal maanden initi') !== false) {
