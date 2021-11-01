@@ -5,6 +5,7 @@
     "keywords": ["framework", "laravel"],
     "license": "MIT",
     "require": {
+        "ext-intl": "*",
         "php": "^7.3|^8.0",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
@@ -12,8 +13,7 @@
         "laravel/framework": "^8.54",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
-        "smalot/pdfparser": "^1.1",
-        "ext-intl": "*"
+        "smalot/pdfparser": "^1.1"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
