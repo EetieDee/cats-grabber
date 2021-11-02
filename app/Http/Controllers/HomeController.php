@@ -108,7 +108,9 @@ class HomeController extends Controller
                 '20091' => 'deadline',
                 '18518' => 'hours_per_week',
                 '37646' => 'referentienr',
-                '20771' => 'scale'
+                '20771' => 'scale',
+                '39907' => 'deadline',
+                '39922' => 'deadline_time'
             ];
 
             foreach ($customFields as $customFieldId => $rawDataName) {

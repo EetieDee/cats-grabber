@@ -12,6 +12,7 @@ abstract class GovernmentPdfAbstract
         $data['country_code'] = 'NL';
         $data['is_hot'] = true;
         $data['max_rate'] = 'Marktconform';
+        $data['is_published'] = false;
 
         // empty
         $data['department_id'] = '';

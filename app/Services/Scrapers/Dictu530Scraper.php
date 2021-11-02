@@ -52,6 +52,7 @@ class Dictu530Scraper extends GovernmentPdfAbstract
 
                     if (strpos($textOfElem, 'Indienen offertes*') !== false) {
                         $rawData['deadline'] = $this->dateHelper->formatDutchDate($this->smalotPdfHelper->getTextByPos($dataTm, $key + 1), 'm-d-Y');
+                        $rawData['deadline_time'] = $this->dateHelper->formatDutchDate($this->smalotPdfHelper->getTextByPos($dataTm, $key + 1), 'H:i');
                     }
 
                     if (strpos($textOfElem, 'Soort Aanvraag') !== false) {

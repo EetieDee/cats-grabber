@@ -6,7 +6,8 @@ class PayloadTransformer
     public function transform($rawData)
     {
         $attributesToCast = [
-            'openings' => 'integer'
+            'openings' => 'integer',
+            'is_published' => 'boolean'
         ];
 
         $payloadObj = new \stdClass();
@@ -18,6 +19,7 @@ class PayloadTransformer
             'owner_id',
             'category_name',
             'is_hot',
+            'is_published',
             'salary',
             'max_rate',
             'duration',
@@ -59,6 +61,9 @@ class PayloadTransformer
                 switch($action) {
                     case 'integer':
                         $payloadObj->$attribute = (int)$value;
+                        break;
+                    case 'boolean':
+                        $payloadObj->$attribute = (bool)$value;
                         break;
                     default:
                         $payloadObj->$attribute = $value;
