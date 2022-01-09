@@ -71,7 +71,7 @@ class Logius850Scraper extends GovernmentPdfAbstract
                     $textOfElem = $currentTm[1];
 
                     if (strpos($textOfElem, 'Indienen offertes*') !== false) {
-                        $rawData['deadline'] = $this->dateHelper->formatDutchDate($this->smalotPdfHelper->getTextByPos($dataTm, $key + 1),'m-d-Y');
+                        $rawData['deadline'] = $this->dateHelper->formatDutchDate($this->smalotPdfHelper->getTextByPos($dataTm, $key + 1),'Y-m-d');
                         $rawData['deadline_time'] = $this->dateHelper->formatDutchDate($this->smalotPdfHelper->getTextByPos($dataTm, $key + 1), 'H:i');
                     }
                 }
