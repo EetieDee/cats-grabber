@@ -41,7 +41,7 @@ class IvoScraper37 extends GovernmentPdfAbstract
 
             if ($this->smalotPdfHelper->textWithinDataTm($dataTm, 'SELECTIE KWALITEITENPROFIEL')) {
 //                echo '<pre>'; print_r($dataTm); exit;
-                $textWithin = $page->getTextXY(355, 994, 20, 20);
+                $textWithin = $page->getTextXY(355, 994, 15, 15);
                 $title =  $this->smalotPdfHelper->getAllTextFromDataTm($textWithin)[0] ?? '';
                 $descriptionToken['title'] = $title;
                 $rawData['title'] = $title;    // JA
@@ -72,7 +72,7 @@ class IvoScraper37 extends GovernmentPdfAbstract
                     $textOfElem = $currentTm[1];
 
                     if (strpos($textOfElem, 'Indienen offertes*') !== false) {
-                        $rawData['deadline'] = $this->dateHelper->formatDutchDate($this->smalotPdfHelper->getTextByPos($dataTm, $key + 1),'m-d-Y');  // JA
+                        $rawData['deadline'] = $this->dateHelper->format($this->smalotPdfHelper->getTextByPos($dataTm, $key + 1),'Y-m-d');  // JA
                         $rawData['deadline_time'] = $this->dateHelper->formatDutchDate($this->smalotPdfHelper->getTextByPos($dataTm, $key + 1), 'H:i');
                     }
                 }
