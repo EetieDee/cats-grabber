@@ -72,7 +72,7 @@ class IvoScraper37 extends GovernmentPdfAbstract
                     $textOfElem = $currentTm[1];
 
                     if (strpos($textOfElem, 'Indienen offertes*') !== false) {
-                        $rawData['deadline'] = $this->dateHelper->format($this->smalotPdfHelper->getTextByPos($dataTm, $key + 1),'Y-m-d');  // JA
+                        $rawData['deadline'] = $this->dateHelper->formatDutchDate($this->smalotPdfHelper->getTextByPos($dataTm, $key + 1),'Y-m-d');  // JA
                         $rawData['deadline_time'] = $this->dateHelper->formatDutchDate($this->smalotPdfHelper->getTextByPos($dataTm, $key + 1), 'H:i');
                     }
                 }
