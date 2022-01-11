@@ -98,7 +98,7 @@ class HomeController extends Controller
         if (strpos($output, 'api.catsone.nl')) {
 
             $link = str_replace('https://api.catsone.nl/v3/jobs/', 'https://ukomst.catsone.nl/index.php?m=joborders&a=show&jobOrderID=', $output);
-            $outputMsg = "Gelukt! Ga naar: <br/> <a href='".$link."' target='_blank'>".$link."</a>";
+            $outputMsg = "Gelukt! Ga naar: <br/> <a href='".$link."' target='_blank'>".$link."</a><br /><br /><a href='/?token=".config('app.secret')."'>Nog een vacature importeren</a>";
             $jobId = $this->getJobIdFromUrl($output);
 
             // OK, add custom fields
@@ -121,7 +121,7 @@ class HomeController extends Controller
             // add attachment
             $this->catsApiClient->addAttachment($jobId, $filePath);
         } else {
-            $outputMsg = 'Vacature bestaat al of er is een fout opgetreden.. '.$output;
+            $outputMsg = "Vacature bestaat al of er is een fout opgetreden.. ".$output."<br /><br /><a href='/?token=".config('app.secret')."'>Overnieuw proberen</a>";
         }
 
         return $outputMsg;
