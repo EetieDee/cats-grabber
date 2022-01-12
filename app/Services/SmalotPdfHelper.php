@@ -118,14 +118,14 @@ class SmalotPdfHelper
         // assume LOGIUS850: it is type 'logius' when the following coords consists of version 5.1
         //   850, 1273
         $dataTmsLogius1 = $page->getTextXY(850, 1273, 15, 15);
-        if ($this->textWithinDataTm($dataTmsLogius1, '5.1')) {
+        if ($this->textWithinDataTm($dataTmsLogius1, '5.1') || $this->textWithinDataTm($dataTmsLogius1, '5.2')) {
             return self::$TYPE_LOGIUS850;
         }
 
         // assume LOGIUS530: it is type 'logius' when the following coords consists of version 5.1
         //   530, 789
         $dataTmsLogius2 = $page->getTextXY(530, 789, 15, 15);
-        if ($this->textWithinDataTm($dataTmsLogius2, '5.1')) {
+        if ($this->textWithinDataTm($dataTmsLogius2, '5.1') || $this->textWithinDataTm($dataTmsLogius2, '5.2')) {
             return self::$TYPE_LOGIUS530;
         }
 

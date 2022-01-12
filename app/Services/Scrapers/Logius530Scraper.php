@@ -4,6 +4,7 @@ namespace App\Services\Scrapers;
 
 use App\Helpers\ArrayHelper;
 use App\Helpers\DateHelper;
+use App\Services\CatsApiClient;
 use App\Services\GeonamesClient;
 use App\Services\SmalotPdfHelper;
 use App\Transformers\DescriptionTransformer;
@@ -15,13 +16,15 @@ class Logius530Scraper extends GovernmentPdfAbstract
     private $smalotPdfHelper;
     private $descriptionTransformer;
     private $arrayHelper;
+    private $catsApiClient;
 
     public function __construct(
         GeonamesClient $geonamesClient,
         DateHelper $dateHelper,
         SmalotPdfHelper $smalotPdfHelper,
         DescriptionTransformer $descriptionTransformer,
-        ArrayHelper $arrayHelper
+        ArrayHelper $arrayHelper,
+        CatsApiClient $catsApiClient
     )
     {
         $this->geonamesClient = $geonamesClient;
@@ -29,6 +32,7 @@ class Logius530Scraper extends GovernmentPdfAbstract
         $this->smalotPdfHelper = $smalotPdfHelper;
         $this->descriptionTransformer = $descriptionTransformer;
         $this->arrayHelper = $arrayHelper;
+        $this->catsApiClient = $catsApiClient;
     }
 
     public function scrape($pages) : array
@@ -53,6 +57,13 @@ class Logius530Scraper extends GovernmentPdfAbstract
 
                     if (strpos($textOfElem, 'Soort Aanvraag') !== false) {
                         $rawData['notes'] = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 1);
+                    }
+
+                    if (strpos($textOfElem, 'Inhurend manager') !== false) {
+                        $contactName = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 1);
+                        if ($contactName) {
+                            $rawData['contact_id'] = $this->catsApiClient->getContactIdFromName($contactName);
+                        }
                     }
                 }
 
@@ -109,6 +120,12 @@ class Logius530Scraper extends GovernmentPdfAbstract
                     if (strpos($textOfElem, 'Aantal maanden initi') !== false) {
                         $rawData['duration'] = $this->smalotPdfHelper->getTextByPos($dataTm, $key - 1) . ' maanden';
                     }
+                    if (strpos($textOfElem, 'Optie op verlenging') !== false) {
+                        $optionOnRenewalText = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 2);
+                        $optionOnRenewalIds = ['ja' => 173243, 'nee' => 173246];
+                        $rawData['option_on_renewal'] = key_exists(strtolower($optionOnRenewalText), $optionOnRenewalIds) ? $optionOnRenewalIds[strtolower($optionOnRenewalText)] : '';
+                    }
+
                     if (strpos($textOfElem, 'Postcode hoofdstandplaats') !== false) {
                         $postalCode = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 2);
                         $rawData['postal_code'] = $postalCode;
@@ -187,6 +204,7 @@ class Logius530Scraper extends GovernmentPdfAbstract
         $rawData['description'] = $description;
 
         $rawData['company_id'] = 1438802;
+        $rawData['end_customer'] = 'Logius';
 
         return array_merge($this->fixedData(), $rawData);
 

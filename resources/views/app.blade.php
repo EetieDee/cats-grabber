@@ -19,7 +19,8 @@
         <input type="file" id="selectfile" />
     </div>
 </div>
-<div class="img-content" style="color: #00BED1; font-family: 'Arial'; font-size: 20px; margin: 10px"></div>
+<div class="img-content" id="loading" style="color: #00BED1; font-family: 'Arial'; font-size: 20px; margin: 10px"></div>
+
 </center>
 </body>
 </html>

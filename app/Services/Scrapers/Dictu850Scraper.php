@@ -4,6 +4,7 @@ namespace App\Services\Scrapers;
 
 use App\Helpers\ArrayHelper;
 use App\Helpers\DateHelper;
+use App\Services\CatsApiClient;
 use App\Services\GeonamesClient;
 use App\Services\SmalotPdfHelper;
 use App\Transformers\DescriptionTransformer;
@@ -15,13 +16,15 @@ class Dictu850Scraper extends GovernmentPdfAbstract
     private $smalotPdfHelper;
     private $descriptionScraper;
     private $arrayHelper;
+    private $catsApiClient;
 
     public function __construct(
         GeonamesClient $geonamesClient,
         DateHelper $dateHelper,
         SmalotPdfHelper $smalotPdfHelper,
         DescriptionTransformer $descriptionScraper,
-        ArrayHelper $arrayHelper
+        ArrayHelper $arrayHelper,
+        CatsApiClient $catsApiClient
     )
     {
         $this->geonamesClient = $geonamesClient;
@@ -29,6 +32,7 @@ class Dictu850Scraper extends GovernmentPdfAbstract
         $this->smalotPdfHelper = $smalotPdfHelper;
         $this->descriptionScraper = $descriptionScraper;
         $this->arrayHelper = $arrayHelper;
+        $this->catsApiClient = $catsApiClient;
     }
 
     public function scrape($pages) : array
@@ -59,6 +63,14 @@ class Dictu850Scraper extends GovernmentPdfAbstract
                     if (strpos($textOfElem, 'Soort Aanvraag') !== false) {
                         $rawData['notes'] = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 1);
                     }
+
+                    if (strpos($textOfElem, 'Inhurend manager') !== false) {
+                        $contactName = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 1);
+                        if ($contactName) {
+                            $rawData['contact_id'] = $this->catsApiClient->getContactIdFromName($contactName);
+                        }
+                    }
+
                 }
 
                 $coordsFromAchtergrond = $this->smalotPdfHelper->getCoordsFromText($dataTm, 'Achtergrond opdracht*', true);
@@ -87,6 +99,7 @@ class Dictu850Scraper extends GovernmentPdfAbstract
 
             // page INZETGEGEVENS
             if ($this->smalotPdfHelper->textWithinDataTm($dataTm, 'INZETGEGEVENS')) {
+
                 foreach ($dataTm as $key => $currentTm) {
                     $textOfElem = $currentTm[1];
 
@@ -100,10 +113,16 @@ class Dictu850Scraper extends GovernmentPdfAbstract
                     if (strpos($textOfElem, 'Aantal maanden initi') !== false) {
                         $rawData['duration'] = $this->smalotPdfHelper->getTextByPos($dataTm, $key - 1) . ' maanden';
                     }
+
+                    if (strpos($textOfElem, 'Optie op verlenging') !== false) {
+                        $optionOnRenewalText = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 2);
+                        $optionOnRenewalIds = ['ja' => 173243, 'nee' => 173246];
+                        $rawData['option_on_renewal'] = key_exists(strtolower($optionOnRenewalText), $optionOnRenewalIds) ? $optionOnRenewalIds[strtolower($optionOnRenewalText)] : '';
+                    }
+
                     if (strpos($textOfElem, 'Postcode hoofdstandplaats') !== false) {
                         $postalCode = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 2);
                         $rawData['postal_code'] = $postalCode;
-                        $rawData['state'] = $this->geonamesClient->getProvinceFromPostalCode($postalCode);
                     }
 
                     if (strpos($textOfElem, 'Naam hoofdstandplaats') !== false) {
@@ -113,6 +132,15 @@ class Dictu850Scraper extends GovernmentPdfAbstract
                     if (strpos($textOfElem, 'Uren per week') !== false) {
                         $rawData['hours_per_week'] = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 2);
                     }
+
+                    if (strpos($textOfElem, 'Extra standplaats(en)') !== false) {
+                        $coordsFromToelichting = $this->smalotPdfHelper->getCoordsFromText($dataTm, 'Extra standplaats(en)', true);
+                        $textWithin = $page->getTextXY(480,$coordsFromToelichting[1], 100, 0);
+                        if (array_key_exists('0', $textWithin) && array_key_exists('1', $textWithin[0]) && $textWithin[0][1]) {
+                            $rawData['notes'] .= '<br />'.$textWithin[0][1];
+                        }
+                    }
+
                 }
             }
 
@@ -160,6 +188,7 @@ class Dictu850Scraper extends GovernmentPdfAbstract
 
         // fixed data Dictu
         $rawData['company_id'] = 1193352;
+        $rawData['end_customer'] = 'DICTU';
 
         return array_merge($this->fixedData(), $rawData);
     }

@@ -16,6 +16,7 @@ return [
     'api_endpoint_add_job' => env('CATSONE_API_ENDPOINT_ADD_JOB'),
     'api_endpoint_add_custom_field' => env('CATSONE_API_ENDPOINT_ADD_CUSTOM_FIELD'),
     'api_endpoint_add_attachment' => env('CATSONE_API_ENDPOINT_ADD_ATTACHMENT'),
+    'api_endpoint_get_contact_id' => env('CATSONE_API_ENDPOINT_GET_CONTACT_ID'),
     'schaal_id' => env('CATSONE_SCHAAL_ID'),
     'token' => env('CATSONE_TOKEN')
 ];

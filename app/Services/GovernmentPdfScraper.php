@@ -42,7 +42,6 @@ class GovernmentPdfScraper
         $type = $this->smalotPdfHelper->assumeType($aanvraagInhuurICTPage);
 //        echo '<pre>';
 //        print_r($type);
-//        print_r($aanvraagInhuurICTPage->getDataTm());
 //        exit;
 
         Log::debug('type: ' . $type . PHP_EOL);

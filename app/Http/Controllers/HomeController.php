@@ -110,7 +110,9 @@ class HomeController extends Controller
                 '37646' => 'referentienr',
                 '20771' => 'scale',
                 '39907' => 'deadline',
-                '39922' => 'deadline_time'
+                '39922' => 'deadline_time',
+                '20561' => 'option_on_renewal',
+                '20732' => 'end_customer'
             ];
 
             foreach ($customFields as $customFieldId => $rawDataName) {
@@ -121,7 +123,7 @@ class HomeController extends Controller
             // add attachment
             $this->catsApiClient->addAttachment($jobId, $filePath);
         } else {
-            $outputMsg = "Vacature bestaat al of er is een fout opgetreden.. ".$output."<br /><br /><a href='/?token=".config('app.secret')."'>Overnieuw proberen</a>";
+            $outputMsg = "Oops! Deze vacature bestaat mogelijk al (controleer in CATS) of er is een fout opgetreden.. ".$output."<br /><br /><a href='/?token=".config('app.secret')."'>Overnieuw proberen</a>";
         }
 
         return $outputMsg;

@@ -7,13 +7,15 @@ class PayloadTransformer
     {
         $attributesToCast = [
             'openings' => 'integer',
-            'is_published' => 'boolean'
+            'is_published' => 'boolean',
+            'contact_id' => 'integer'
         ];
 
         $payloadObj = new \stdClass();
         $payloadAttributes = [
             'title',
             'company_id',
+            'contact_id',
             'department_id',
             'recruiter_id',
             'owner_id',
@@ -46,6 +48,9 @@ class PayloadTransformer
             'postal_code'
         ];
         foreach($locationAttributes as $attribute) {
+            if (!array_key_exists($attribute, $rawData)) {
+                continue;
+            }
             $locationObj = $this->setAttributeWhenSet($locationObj, $attribute, $rawData[$attribute], $attributesToCast);
         }
         $payloadObj->location = $locationObj;

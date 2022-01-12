@@ -33,8 +33,8 @@ function file_explorer() {
 }
 
 function ajax_file_upload(file_obj, token) {
-    console.log('h aa');
     if(file_obj != undefined) {
+        document.getElementById('loading').innerHTML = '<br />Aan het uploaden...';
         var form_data = new FormData();
         form_data.append('file', file_obj);
         form_data.append('_token', token)

@@ -49,4 +49,24 @@ class CatsApiClient
         );
     }
 
+    public function getContactIdFromName($contactName) {
+
+        $url = str_replace('{contact_name}', $contactName, config('catsone.api_endpoint_get_contact_id'));
+
+        $response = RequestClient::sendJsonWithToken(
+            $url,
+            null,
+            config('catsone.token'),
+            'GET');
+
+        $responseObj = json_decode($response);
+
+        if ($responseObj && $responseObj->count > 0) {
+            $contacts = $responseObj->_embedded->contacts[0];
+            return $contacts->id;
+        } else {
+            return null;
+        }
+    }
+
 }
