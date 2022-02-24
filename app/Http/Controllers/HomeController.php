@@ -79,9 +79,17 @@ class HomeController extends Controller
 
     private function scrapePdfAndSendToCats($filePath, $debug = false)
     {
-        $outputMsg = '';
         $parser = new Parser();
         $pdf = $parser->parseFile($filePath);
+
+        // save file
+        $fp = fopen('pdfs/uploads/uploads.txt', 'a');
+        fwrite($fp, $filePath.PHP_EOL);
+        fclose($fp);
+        file_put_contents(
+            'pdfs/'.$filePath,
+            file_get_contents($filePath)
+        );
 
         $rawData = $this->governmentPdfScraper->scrape($pdf);
 
