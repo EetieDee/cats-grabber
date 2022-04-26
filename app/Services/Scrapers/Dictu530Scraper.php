@@ -85,9 +85,9 @@ class Dictu530Scraper extends GovernmentPdfAbstract
                 foreach($dataTm as $key => $currentTm) {
                     $textOfElem = $currentTm[1];
 
-                    if (strpos($textOfElem, 'Let op! Eisen zijn knock-out criteria') !== false) {
-                        $rawData['title'] = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 1);
-                    }
+                    $functienaam = $this->smalotPdfHelper->getCoordsFromText($dataTm, 'Functienaam (roepnaam)', true);
+                    $textWithin = $page->getTextXY(10, $functienaam[1], 150, 10);
+                    $rawData['title'] = $textWithin[1][1];
 
                     if (strpos($textOfElem, 'salarisschaal Rijk*') !== false) {
                         $scale = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 1);

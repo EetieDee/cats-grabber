@@ -48,12 +48,13 @@ class DescriptionTransformer
 //        $description .= $this->arrayHelper->returnListFromArray($descriptionToken['eisen_dominant']);
 //        $description .= $this->arrayHelper->returnListFromArray($descriptionToken['eisen_overige_vereiste']);
 //        $description .= $this->arrayHelper->returnListFromArray($descriptionToken['ervaring']);
-        $description .= '<br />';
+        $description .= '<br /><br />';
         $description .= '<b>Wensen:</b><br /><br />';
 //        $description .= $this->arrayHelper->returnListFromArray($descriptionToken['wensen_competenties']);
 //        $description .= $this->arrayHelper->returnListFromArray($descriptionToken['wensen_aanvullende_kennis']);
 //        $description .= $this->arrayHelper->returnListFromArray($descriptionToken['wensen_overige_functiewensen']);
-        $description .= '<br />';
+        $description .= '<br /><br />';
+        $description .= '<b>Competenties:</b><br /><br />';
 
         return $description;
     }
