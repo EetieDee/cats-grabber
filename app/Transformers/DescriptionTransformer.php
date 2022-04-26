@@ -38,19 +38,21 @@ class DescriptionTransformer
         $description = '';
         $description .= $descriptionToken['header'];
         $description .= '<br /><br />';
-        $description .= implode(',', $descriptionToken['aanvullend']);
+        $description .= '<b>Opdrachtbeschrijving:</b>:<br /><br />';
+//        $description .= implode(',', $descriptionToken['aanvullend']);
         $description .= '<br /><br />';
-        $description .= implode(',', $descriptionToken['toelichting']);
+//        $description .= implode(',', $descriptionToken['toelichting']);
+        $description .= '<b>Achtergrond opdracht:</b>:<br /><br />';
         $description .= '<br /><br />';
-        $description .= 'Eisen:<br />';
-        $description .= $this->arrayHelper->returnListFromArray($descriptionToken['eisen_dominant']);
-        $description .= $this->arrayHelper->returnListFromArray($descriptionToken['eisen_overige_vereiste']);
-        $description .= $this->arrayHelper->returnListFromArray($descriptionToken['ervaring']);
+        $description .= '<b>Eisen</b>:<br /><br />';
+//        $description .= $this->arrayHelper->returnListFromArray($descriptionToken['eisen_dominant']);
+//        $description .= $this->arrayHelper->returnListFromArray($descriptionToken['eisen_overige_vereiste']);
+//        $description .= $this->arrayHelper->returnListFromArray($descriptionToken['ervaring']);
         $description .= '<br />';
-        $description .= 'Wensen:<br />';
-        $description .= $this->arrayHelper->returnListFromArray($descriptionToken['wensen_competenties']);
-        $description .= $this->arrayHelper->returnListFromArray($descriptionToken['wensen_aanvullende_kennis']);
-        $description .= $this->arrayHelper->returnListFromArray($descriptionToken['wensen_overige_functiewensen']);
+        $description .= '<b>Wensen:</b><br /><br />';
+//        $description .= $this->arrayHelper->returnListFromArray($descriptionToken['wensen_competenties']);
+//        $description .= $this->arrayHelper->returnListFromArray($descriptionToken['wensen_aanvullende_kennis']);
+//        $description .= $this->arrayHelper->returnListFromArray($descriptionToken['wensen_overige_functiewensen']);
         $description .= '<br />';
 
         return $description;
@@ -59,13 +61,14 @@ class DescriptionTransformer
     public function getHeader($rawData): string
     {
         $output = '';
-        $output .= 'Functie: ' . $rawData['title'] . '<br />';
-        $output .= 'Locatie: ' . $rawData['city'] . '<br />';
-        $output .= 'Startdatum: ' . $rawData['start_date_header'] . '<br />';
-        $output .= 'Duur opdracht: ' . $rawData['duration'] . '<br />';
-        $output .= 'Inzet per week: ' . $rawData['hours_per_week'] . ' uur<br />';
-        $output .= 'Max. uurtarief: Marktconform' . '<br />';
-        $output .= 'Deadline aanbieden: ' . $rawData['deadline'] . '<br />';
+        $output .= '<b>Functie:</b> ' . $rawData['title'] . '<br />';
+        $output .= '<b>Locatie:</b> ' . $rawData['city'] . '<br />';
+        $output .= '<b>Startdatum:</b> ' . $rawData['start_date_header'] . '<br />';
+        // $output .= '<b>Duur opdracht:</b> ' . $rawData['duration'] . '<br />';
+        $output .= '<b>Duur opdracht:</b> maanden met optie tot verlengen<br />';
+        $output .= '<b>Inzet per week:</b> ' . $rawData['hours_per_week'] . ' uur<br />';
+        $output .= '<b>Max. uurtarief: Marktconform</b>' . '<br />';
+        $output .= '<b>Deadline aanbieden:</b> ' . $rawData['deadline'] . '<br />';
 
         return $output;
     }
