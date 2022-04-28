@@ -60,7 +60,7 @@ class HomeController extends Controller
             return $output;
 
         } catch (\Exception $e) {
-            return $e->getMessage();
+            return $e->getMessage().':::'.$e->getTraceAsString();
         }
     }
 
