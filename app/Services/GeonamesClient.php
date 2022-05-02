@@ -19,7 +19,7 @@ class GeonamesClient
         if (property_exists($responseArray, 'postalcodes') && array_key_exists(0, $responseArray->postalcodes)) {
             return str_replace('-', ' ', json_decode($response)->postalcodes[0]->adminName1);
         } else {
-            return null;
+            return 'VOER PROVINCIE IN';
         }
     }
 }
