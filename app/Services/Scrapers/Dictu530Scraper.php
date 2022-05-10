@@ -87,7 +87,7 @@ class Dictu530Scraper extends GovernmentPdfAbstract
 
                     $functienaam = $this->smalotPdfHelper->getCoordsFromText($dataTm, 'Functienaam (roepnaam)', true);
                     $textWithin = $page->getTextXY(10, $functienaam[1], 150, 10);
-                    $rawData['title'] = $textWithin[1][1];
+                    $rawData['title'] = $textWithin && array_key_exists(1, $textWithin) && array_key_exists(1, $textWithin[1]) ? $textWithin[1][1] : 'VUL FUNCTIENAAM IN';
 
                     if (strpos($textOfElem, 'salarisschaal Rijk*') !== false) {
                         $scale = $this->smalotPdfHelper->getTextByPos($dataTm, $key + 1);
