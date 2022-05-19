@@ -11,6 +11,7 @@ class CatsApiClient
             config('catsone.token'),
             'POST',
             'location');
+
     }
 
     public function addCustomField($jobId, $customFieldId, $jsonPayload) {
