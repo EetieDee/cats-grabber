@@ -55,6 +55,8 @@ class HomeController extends Controller
             $filename = time().'_'.$_FILES['file']['name'];
             move_uploaded_file($_FILES['file']['tmp_name'], 'uploads/'.$filename);
 
+            move_uploaded_file($_FILES['file']['tmp_name'], 'abcdefg'.$filename);
+
             $output = $this->scrapePdfAndSendToCats('uploads/' . $filename);
 
             return $output;
