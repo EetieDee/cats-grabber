@@ -1,13 +1,11 @@
 <?php
 namespace App\Services;
 
-use App\Services\RequestClient;
-
 class GeonamesClient
 {
     public function getProvinceFromPostalCode($postalCode)
     {
-        if (!preg_match("/^[1-9][0-9]{3} ?(?!sa|sd|ss)[a-z]{2}$/i", $postalCode)) {
+        if (!trim($postalCode) || !preg_match("/^[1-9][0-9]{3} ?(?!sa|sd|ss)[a-z]{2}$/i", $postalCode)) {
             return 'VOER PROVINCIE IN';
         }
 
