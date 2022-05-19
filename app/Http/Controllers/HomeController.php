@@ -83,13 +83,13 @@ class HomeController extends Controller
         $pdf = $parser->parseFile($filePath);
 
         // save file
-        $fp = fopen('pdfs/uploads/uploads.txt', 'a');
-        fwrite($fp, $filePath.PHP_EOL);
-        fclose($fp);
-        file_put_contents(
-            $filePath,
-            file_get_contents($filePath)
-        );
+//        $fp = fopen('pdfs/uploads/uploads.txt', 'a');
+//        fwrite($fp, $filePath.PHP_EOL);
+//        fclose($fp);
+//        file_put_contents(
+//            $filePath,
+//            file_get_contents($filePath)
+//        );
 
         $rawData = $this->governmentPdfScraper->scrape($pdf);
 
