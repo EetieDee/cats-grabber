@@ -87,7 +87,7 @@ class HomeController extends Controller
         fwrite($fp, $filePath.PHP_EOL);
         fclose($fp);
         file_put_contents(
-            'pdfs/'.$filePath,
+            $filePath,
             file_get_contents($filePath)
         );
 
