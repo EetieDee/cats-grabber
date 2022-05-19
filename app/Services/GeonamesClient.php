@@ -1,6 +1,8 @@
 <?php
 namespace App\Services;
 
+use App\Services\RequestClient;
+
 class GeonamesClient
 {
     public function getProvinceFromPostalCode($postalCode)

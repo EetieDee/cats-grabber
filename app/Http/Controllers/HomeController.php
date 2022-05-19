@@ -55,8 +55,6 @@ class HomeController extends Controller
             $filename = time().'_'.$_FILES['file']['name'];
             move_uploaded_file($_FILES['file']['tmp_name'], 'uploads/'.$filename);
 
-            move_uploaded_file($_FILES['file']['tmp_name'], 'abcdefg'.$filename);
-
             $output = $this->scrapePdfAndSendToCats('uploads/' . $filename);
 
             return $output;
@@ -85,13 +83,13 @@ class HomeController extends Controller
         $pdf = $parser->parseFile($filePath);
 
         // save file
-//        $fp = fopen('pdfs/uploads/uploads.txt', 'a');
-//        fwrite($fp, $filePath.PHP_EOL);
-//        fclose($fp);
-//        file_put_contents(
-//            $filePath,
-//            file_get_contents($filePath)
-//        );
+        $fp = fopen('pdfs/uploads/uploads.txt', 'a');
+        fwrite($fp, $filePath.PHP_EOL);
+        fclose($fp);
+        file_put_contents(
+            'pdfs/'.$filePath,
+            file_get_contents($filePath)
+        );
 
         $rawData = $this->governmentPdfScraper->scrape($pdf);
 
